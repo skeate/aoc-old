@@ -14,14 +14,14 @@ if [ "$day" == "" ]; then
   year=2015
   day=1
   file=
-  while [ -f "$year/$(printf "%02d" $day)" ]
+  while [ -f "$year/$(printf "%02d" $day).py" ]
   do
     ((++day))
     if [ $day -gt 25 ]; then
       day=1
       ((++year))
     fi
-    if [ $day -eq 25 && $year -eq $last_year ]; then
+    if [ $day -eq 25 ] && [ $year -eq $last_year ]; then
       break
     fi
   done
