@@ -34,6 +34,9 @@ inputfile=$year/input$(printf "%02d" $day).py
 
 if [ ! -f "$inputfile" ]; then
   ./get $day $year
+  if [ $? -ne 0 ]; then
+    exit 1
+  fi
 fi
 
 if [ ! -f "$file" ]; then
