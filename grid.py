@@ -19,6 +19,18 @@ class Grid:
         self.loc = tuple(sum(x) for x in zip_longest(self.loc, dloc, fillvalue=0))
         self.grid[self.loc] = self.visit()
 
+    def slide_x(self, dx):
+        neg = dx < 0
+        for x in range(1, abs(dx) + 1):
+            if neg: self.left()
+            else: self.right()
+
+    def slide_y(self, dy):
+        neg = dy < 0
+        for y in range(1, abs(dy) + 1):
+            if neg: self.down()
+            else: self.up()
+
     def up(self):
         self.move((1,))
     def down(self):
