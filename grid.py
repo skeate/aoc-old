@@ -31,6 +31,12 @@ class Grid:
             if neg: self.down()
             else: self.up()
 
+    def slide_z(self, dz):
+        neg = dz < 0
+        for z in range(1, abs(dz) + 1):
+            if neg: self.backward()
+            else: self.forward()
+
     def up(self):
         self.move((1,))
     def down(self):
