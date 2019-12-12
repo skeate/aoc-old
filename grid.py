@@ -1,4 +1,8 @@
+import os
 from itertools import zip_longest
+
+def same(x):
+    return x
 
 class Grid:
     def __init__(self, visit, start=(0,0)):
@@ -49,3 +53,24 @@ class Grid:
         self.move((0,0,1))
     def backward(self):
         self.move((0,0,-1))
+
+    def display(self, flipx=False, flipy=False, trans=lambda x:x):
+        minx = min(c[0] for c in self.grid.keys())
+        miny = min(c[1] for c in self.grid.keys())
+        maxx = max(c[0] for c in self.grid.keys())
+        maxy = max(c[1] for c in self.grid.keys())
+        rows = maxy - miny + 1
+        cols = maxx - minx + 1
+        tty_rows, tty_cols = (int(d) for d in os.popen('stty size', 'r').read().split())
+        if tty_rows < rows or tty_cols < cols:
+            print(f'Grid ({rows} x {cols}) too large for terminal ({tty_rows} x {tty_cols})')
+        else:
+            ordery = reversed if flipy else same
+            orderx = reversed if flipx else same
+            for y in ordery(range(miny, maxy + 1)):
+                for x in orderx(range(minx, maxx + 1)):
+                    if (x,y) in self.grid:
+                        print(trans(self.grid[(x,y)]), end='')
+                    else:
+                        print(' ', end='')
+                print()

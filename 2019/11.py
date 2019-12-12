@@ -1,3 +1,6 @@
+import os
+import sys
+sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import threading
 from queue import Queue
 from input11 import v
@@ -6,60 +9,58 @@ from grid import Grid
 
 v = [int(x) for x in v.strip().split(',')]
 
-iq = Queue()
-oq = Queue()
-cc = ICC(v, iq, oq)
-
 UP = 0
 RIGHT = 1
 DOWN = 2
 LEFT = 3
-dr = UP
-loc = (0, 0)
 
-panels = {}
+def noop(g, l): pass
 
-running = True
+def paint_start(color):
+    iq = Queue()
+    oq = Queue()
+    cc = ICC(v, iq, oq)
 
-def paint_grid():
-    global panels, dr, loc, cc, running
-    while running:
-        panels[loc] = oq.get() # color
-        turn = oq.get()
-        dr = ((turn * 2 - 1) + dr) % 4
-        if dr == UP:
-            loc = (loc[0], loc[1] + 1)
-        elif dr == LEFT:
-            loc = (loc[0] - 1, loc[1])
-        elif dr == RIGHT:
-            loc = (loc[0] + 1, loc[1])
-        elif dr == DOWN:
-            loc = (loc[0], loc[1] - 1)
-        if loc in panels:
-            iq.put(panels[loc])
-        else:
-            iq.put(0)
+    dr = UP
+    loc = (0, 0)
 
-t = threading.Thread(target=paint_grid)
-t.start()
+    panels = Grid(noop)
 
-iq.put(1)
-cc.run()
+    running = True
 
-running = False
-t.join()
+    def paint_grid():
+        nonlocal loc, dr
+        while running:
+            panels.grid[loc] = oq.get() # color
+            turn = oq.get()
+            dr = ((turn * 2 - 1) + dr) % 4
+            if dr == UP:
+                loc = (loc[0], loc[1] + 1)
+            elif dr == LEFT:
+                loc = (loc[0] - 1, loc[1])
+            elif dr == RIGHT:
+                loc = (loc[0] + 1, loc[1])
+            elif dr == DOWN:
+                loc = (loc[0], loc[1] - 1)
+            if loc in panels.grid:
+                iq.put(panels.grid[loc])
+            else:
+                iq.put(0)
 
-print(len(panels))
+    t = threading.Thread(target=paint_grid)
+    t.start()
 
-minx = min(x[0] for x in panels.keys())
-miny = min(x[1] for x in panels.keys())
-maxx = max(x[0] for x in panels.keys())
-maxy = max(x[1] for x in panels.keys())
+    iq.put(color)
+    cc.run()
 
-for y in reversed(range(miny, maxy + 1)):
-    for x in range(minx, maxx + 1):
-        if (x,y) in panels and panels[(x,y)] == 1:
-            print('#', end='')
-        else:
-            print(' ', end='')
-    print()
+    running = False
+    t.join()
+
+    return panels
+
+print(len(paint_start(0).grid))
+
+paint_start(1).display(
+    flipy=True,
+    trans=lambda x: ' ' if x == 0 else '#'
+)
