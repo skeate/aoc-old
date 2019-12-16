@@ -1,11 +1,11 @@
 import os
 from itertools import zip_longest
 
-def same(x):
-    return x
+def same(x): return x
+def noop(a,b): pass
 
 class Grid:
-    def __init__(self, visit, start=(0,0)):
+    def __init__(self, visit=noop, start=(0,0)):
         self.grid = {}
         self.loc = start
         self._visit = visit
@@ -54,7 +54,7 @@ class Grid:
     def backward(self):
         self.move((0,0,-1))
 
-    def display(self, flipx=False, flipy=False, trans=lambda x:x):
+    def display(self, flipx=False, flipy=False, trans=lambda x:x, mark=None):
         minx = min(c[0] for c in self.grid.keys())
         miny = min(c[1] for c in self.grid.keys())
         maxx = max(c[0] for c in self.grid.keys())
@@ -69,7 +69,9 @@ class Grid:
             orderx = reversed if flipx else same
             for y in ordery(range(miny, maxy + 1)):
                 for x in orderx(range(minx, maxx + 1)):
-                    if (x,y) in self.grid:
+                    if (x,y) == mark:
+                        print('x', end='')
+                    elif (x,y) in self.grid:
                         print(trans(self.grid[(x,y)]), end='')
                     else:
                         print(' ', end='')
