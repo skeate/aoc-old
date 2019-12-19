@@ -22,17 +22,22 @@ class ddict(dict):
 
 class ICC:
     def __init__(self, code, iq, oq, id='', debug = False):
-        self.code = ddict({i: p for i,p in enumerate(code)})
+        self.orig_code = code
+        self.code = {}
         self.iq = iq
         self.oq = oq
         self.debug = debug
         self.id = id
         self.relbase = 0
 
-    def run(self):
-        self.ip = 0
-        while self.ip is not None:
-            self.ip = self.execute_instruction()
+    def run(self, continuous=False):
+        while True:
+            self.ip = 0
+            self.code = ddict({i: p for i,p in enumerate(self.orig_code)})
+            while self.ip is not None:
+                self.ip = self.execute_instruction()
+            if not continuous:
+                break
 
     def amsg(self, s):
         print(f'[ICC-{self.id}] {s}')

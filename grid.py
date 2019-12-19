@@ -62,7 +62,7 @@ class Grid:
         rows = maxy - miny + 1
         cols = maxx - minx + 1
         tty_rows, tty_cols = (int(d) for d in os.popen('stty size', 'r').read().split())
-        if tty_rows < rows or tty_cols < cols:
+        if tty_cols < cols:
             print(f'Grid ({rows} x {cols}) too large for terminal ({tty_rows} x {tty_cols})')
         else:
             ordery = reversed if flipy else same
