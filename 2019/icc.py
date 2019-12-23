@@ -1,4 +1,5 @@
 import sys
+from time import sleep
 
 opcode = {
     1:  ('add',    3),
@@ -21,7 +22,7 @@ class ddict(dict):
         return 0
 
 class ICC:
-    def __init__(self, code, iq, oq, id='', debug = False):
+    def __init__(self, code, iq, oq, id='', debug = False, default_input = None):
         self.orig_code = code
         self.code = {}
         self.iq = iq
@@ -29,6 +30,7 @@ class ICC:
         self.debug = debug
         self.id = id
         self.relbase = 0
+        self.default_input = default_input
 
     def run(self, continuous=False):
         while True:
@@ -77,7 +79,14 @@ class ICC:
             self.code[dest] = vals[0] * vals[1]
 
         elif name == 'input':
-            self.code[dest] = self.iq.get()
+            if self.default_input is not None:
+                try:
+                    self.code[dest] = self.iq.get_nowait()
+                except:
+                    self.code[dest] = self.default_input
+                sleep(.000001)
+            else:
+                self.code[dest] = self.iq.get()
 
         elif name == 'output':
             self.oq.put(vals[0])
