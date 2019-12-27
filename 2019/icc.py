@@ -122,17 +122,23 @@ if __name__ == '__main__':
     class IOStream:
         def __init__(self):
             self.ap = 2
+            self.remaining = ''
 
         def get(self):
+            if len(self.remaining) > 0:
+                x, self.remaining = self.remaining[0], self.remaining[1:]
+                return ord(x)
             if len(sys.argv) > self.ap:
                 a = sys.argv[self.ap]
                 self.ap += 1
                 return int(a)
-            return int(input())
+            self.remaining = input() + '\n'
+            x, self.remaining = self.remaining[0], self.remaining[1:]
+            return ord(x)
         def put(self, x):
-            print(x)
+            print(chr(x), end='')
 
     io = IOStream()
 
-    icc = ICC(intcode, io, io, debug = True)
+    icc = ICC(intcode, io, io, debug = False)
     icc.run()
